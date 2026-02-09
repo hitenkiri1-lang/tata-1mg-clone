@@ -254,6 +254,83 @@ tata-1mg-clone/
 
 ---
 
+## ⚠️ Admin Login Issue – Invalid Credentials Fix
+
+If you encounter "Invalid credentials" error when trying to login to the admin panel, follow these steps to resolve the issue:
+
+### Understanding the Issue
+
+The admin login system uses **bcrypt password hashing** for security. Passwords stored in plain text in the database will not work. The password must be properly hashed using the bcrypt algorithm.
+
+### Step-by-Step Fix
+
+#### Step 1: Open phpMyAdmin
+1. Navigate to [http://localhost/phpmyadmin](http://localhost/phpmyadmin)
+2. Select the `tata_1mg_clone` database from the left sidebar
+
+#### Step 2: Check Admin Username
+1. Click on the `admins` table
+2. Click the "Browse" tab to view all records
+3. Note the exact **username** in the table (e.g., `admin`)
+4. **Important**: Use this exact username for login (case-sensitive)
+
+#### Step 3: Generate Bcrypt Password Hash
+1. Open [https://bcrypt-generator.com/](https://bcrypt-generator.com/) in your browser
+2. Enter your desired password (e.g., `admin123`)
+3. Set the "Cost" to **10** (default)
+4. Click "Generate Hash"
+5. Copy the generated bcrypt hash (starts with `$2y$` or `$2a$`)
+   - Example: `$2y$10$abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJ`
+
+#### Step 4: Update Password in Database
+1. Return to phpMyAdmin
+2. In the `admins` table, click the "Edit" icon (pencil) for the admin record
+3. Find the `password` field
+4. **Replace** the existing value with the bcrypt hash you generated
+5. Click "Go" to save changes
+
+#### Step 5: Login with Updated Credentials
+1. Go to [http://localhost/tata-1mg-clone/admin/](http://localhost/tata-1mg-clone/admin/)
+2. Enter the **username** from Step 2
+3. Enter the **plain text password** you used in Step 3 (e.g., `admin123`)
+4. Click "Login"
+
+### Important Notes
+
+- ✅ **Passwords are stored as bcrypt hashes** - Never store plain text passwords
+- ✅ **Username is case-sensitive** - Use the exact username from the database
+- ✅ **Password field must contain bcrypt hash** - Plain text will not work
+- ✅ **Bcrypt hash starts with `$2y$` or `$2a$`** - Verify the hash format
+- ✅ **Login uses plain text password** - The system hashes it automatically for comparison
+
+### Example
+
+**Database Record:**
+```
+username: admin
+password: $2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi
+```
+
+**Login Form:**
+```
+Username: admin
+Password: admin123
+```
+
+The system will hash `admin123` and compare it with the stored hash.
+
+### Troubleshooting
+
+**Still can't login?**
+1. Clear browser cache and cookies
+2. Verify Apache and MySQL are running in XAMPP
+3. Check `config/database.php` for correct database credentials
+4. Ensure the `admins` table exists and has at least one record
+5. Check browser console for JavaScript errors
+6. Verify the bcrypt hash was copied completely (no spaces or line breaks)
+
+---
+
 ## 📖 Features Documentation
 
 ### User Registration
@@ -434,7 +511,7 @@ For any queries or issues:
 
 ## 📄 License
 
-This project is developed for academic purposes.
+This project is developed for academic purposes as a final year project.
 
 ---
 
